@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:ProjektGraficzny"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Image x:Name="RendererImage" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="UniformToFill"/>
+
     </Grid>
 </Window>
