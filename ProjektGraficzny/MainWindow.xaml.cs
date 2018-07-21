@@ -29,7 +29,7 @@ namespace ProjektGraficzny
 
         private double zoom = 0.004;
         private double offsetX = -0.7;
-        private double offsetY = 0.0;
+        private double offsetY = -0.35;
 
         public MainWindow()
         {
@@ -99,8 +99,8 @@ namespace ProjektGraficzny
             //ContactsGrid.Width = this.ActualWidth - 20;
             //ContactsGrid.Height = this.ActualHeight - 190;
 
-            Settings.renderWidth = (int)this.ActualWidth;
-            Settings.renderHeight = (int)this.ActualHeight;
+            Settings.renderWidth = (int)MainGrid.ActualWidth;
+            Settings.renderHeight = (int)MainGrid.ActualHeight;
 
             Settings.Save();
 

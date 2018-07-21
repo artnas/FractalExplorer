@@ -11,6 +11,7 @@ namespace Fractals
 
         internal byte[] buffer;
         internal int width, height;
+        internal float aspectRatio = 1;
 
         public abstract void DrawCpuSingle(double xOffset, double yOffset, double zoom);
         public abstract void DrawCpuMulti(double xOffset, double yOffset, double zoom);

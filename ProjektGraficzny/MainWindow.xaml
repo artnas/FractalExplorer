@@ -5,9 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProjektGraficzny"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Image x:Name="RendererImage" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="UniformToFill"/>
-
+        Title="Fraktale - Artur Nasiadko" Height="600" Width="800">
+    <Grid x:Name="MainGrid">
+        <Image x:Name="RendererImage"/>
     </Grid>
 </Window>

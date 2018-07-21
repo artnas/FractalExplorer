@@ -16,6 +16,8 @@ namespace Fractals
             this.buffer = buffer;
             this.width = width;
             this.height = height;
+
+            this.aspectRatio = (float) width / height;
         }
 
         public override void DrawCpuSingle(double xOffset, double yOffset, double zoom)
@@ -28,7 +30,7 @@ namespace Fractals
                     int index = (x + y * width) * 4;
 
                     double _x = (x - width / 2.0) * zoom + xOffset;
-                    double _y = (y - height / 2.0) * zoom + yOffset;
+                    double _y = (y - height / 2.0) * zoom / aspectRatio + yOffset / aspectRatio;
 
                     int iterations = GetValue(index, _x, _y, 127);
 
@@ -48,7 +50,7 @@ namespace Fractals
                 int y = (int) (Math.Floor( (double) (i - x) ) / height);
 
                 double _x = (x - width / 2.0) * zoom + xOffset;
-                double _y = (y - height / 2.0) * zoom + yOffset;
+                double _y = (y - height / 2.0) * zoom / aspectRatio + yOffset / aspectRatio;
 
                 int iterations = GetValue(0, _x, _y, 127);
 
@@ -67,6 +69,7 @@ namespace Fractals
             byte[] buffer = this.buffer;
             int width = this.width;
             int height = this.height;
+            float aspectRatio = this.aspectRatio;
 
             int size = width * height;
 
@@ -77,7 +80,7 @@ namespace Fractals
                 int y = (int)(Math.Floor((double)(i - x)) / height);
 
                 double _x = (x - width / 2.0) * zoom + xOffset;
-                double _y = (y - height / 2.0) * zoom + yOffset;
+                double _y = (y - height / 2.0) / aspectRatio * zoom + yOffset / aspectRatio;
 
                 int counter;
 
