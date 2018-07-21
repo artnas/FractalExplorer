@@ -28,6 +28,7 @@ namespace ProjektGraficzny
         private byte[] colorBuffer;
 
         private double zoom = 0.004;
+
         private double offsetX = -0.7;
         private double offsetY = -0.35;
 
@@ -41,6 +42,7 @@ namespace ProjektGraficzny
         private void OnStart()
         {
             Settings.Load();
+            Utils.BuildIterationColorsCache();
 
             rendererBitmap = new WriteableBitmap(Settings.renderWidth, Settings.renderHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
             colorBuffer = new byte[Settings.renderWidth * Settings.renderHeight * 4];
@@ -58,7 +60,11 @@ namespace ProjektGraficzny
 
             Mandelbrot mandelBrot = new Mandelbrot(colorBuffer, Settings.renderWidth, Settings.renderHeight);
 
-            mandelBrot.DrawGpu(offsetX, offsetY, zoom);
+            mandelBrot.DrawOnGpu(offsetX, offsetY, zoom);
+
+            // Julia fractal = new Julia(colorBuffer, Settings.renderWidth, Settings.renderHeight);
+            //
+            // fractal.DrawOnSingleThread(offsetX, offsetY, zoom);
 
             DrawColorBuffer();
 

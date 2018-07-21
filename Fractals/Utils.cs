@@ -9,8 +9,29 @@ namespace Fractals
     public static class Utils
     {
 
+        private static byte[] cachedIterationColors;
+        public static void BuildIterationColorsCache()
+        {
+            cachedIterationColors = new byte[128 * 3];
+
+            for (int i = 0; i < 128; i++)
+            {
+                EvaluateIterationColor(i, ref cachedIterationColors[i * 3], ref cachedIterationColors[i * 3 + 1], ref cachedIterationColors[i * 3 + 2]);
+            }
+        }
+
         public static void GetIterationColor(int iteration, ref byte b, ref byte g, ref byte r)
         {
+            iteration %= 128;
+            b = cachedIterationColors[iteration * 3];
+            g = cachedIterationColors[iteration * 3 + 1];
+            r = cachedIterationColors[iteration * 3 + 2];
+        }
+
+        private static void EvaluateIterationColor(int iteration, ref byte b, ref byte g, ref byte r)
+        {
+
+            iteration %= 128;
 
             if (iteration == -1)
             {

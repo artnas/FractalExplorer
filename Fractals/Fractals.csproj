@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fractal.cs" />
+    <Compile Include="Julia.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Mandelbrot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

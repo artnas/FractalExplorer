@@ -8,12 +8,15 @@ using Alea.Parallel;
 
 namespace Fractals
 {
-    public class Mandelbrot : Fractal
+    public class Julia : Fractal
     {
 
-        internal readonly int maxIterations = 256;
+        internal readonly int maxIterations = 128;
+        internal readonly double cX = -0.7, cY = 0.27015;
+        internal readonly double zoomMultiplier = 250;
+        internal readonly double offsetMultiplier = 0.04;
 
-        public Mandelbrot(byte[] buffer, int width, int height)
+        public Julia(byte[] buffer, int width, int height)
         {
             this.buffer = buffer;
             this.width = width;
@@ -24,20 +27,26 @@ namespace Fractals
 
         public override void DrawOnSingleThread(double xOffset, double yOffset, double zoom)
         {
+            Console.WriteLine(zoom);
+
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
-
                     int index = (x + y * width) * 4;
 
-                    double _x = (x - width / 2.0) * zoom + xOffset;
-                    double _y = (y - height / 2.0) * zoom / aspectRatio + yOffset / aspectRatio;
+                    double zx = 1.5 * (x - width / 2.0) / (0.5 * zoom * width * zoomMultiplier) + xOffset * offsetMultiplier;
+                    double zy = 1.0 * (y - height / 2.0) / (0.5 * zoom * height * zoomMultiplier) / aspectRatio + (yOffset / aspectRatio) * offsetMultiplier;
+                    int i = maxIterations;
+                    while (zx * zx + zy * zy < 4 && i > 1)
+                    {
+                        var tmp = zx * zx - zy * zy + cX;
+                        zy = 2.0 * zx * zy + cY;
+                        zx = tmp;
+                        i--;
+                    }
 
-                    int iterations = GetValue(index, _x, _y);
-
-                    Utils.GetIterationColor(iterations, ref buffer[index], ref buffer[index+1], ref buffer[index+2]);
-
+                    Utils.GetIterationColor(i, ref buffer[index], ref buffer[index + 1], ref buffer[index + 2]);
                 }
             }
         }

@@ -13,10 +13,10 @@ namespace Fractals
         internal int width, height;
         internal float aspectRatio = 1;
 
-        public abstract void DrawCpuSingle(double xOffset, double yOffset, double zoom);
-        public abstract void DrawCpuMulti(double xOffset, double yOffset, double zoom);
-        public abstract void DrawGpu(double xOffset, double yOffset, double zoom);
-        public abstract int GetValue(int index, double x, double y, int maxIteration);
+        public abstract void DrawOnSingleThread(double xOffset, double yOffset, double zoom);
+        public abstract void DrawOnMultipleThreads(double xOffset, double yOffset, double zoom);
+        public abstract void DrawOnGpu(double xOffset, double yOffset, double zoom);
+        public abstract int GetValue(int index, double x, double y);
 
     }
 }
