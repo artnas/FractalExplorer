@@ -26,7 +26,7 @@
                     <MenuItem Header="_CPU Parallel" Name="DrawingChoice1" Click="DrawingChoice_OnClick"/>
                     <MenuItem Header="_GPU" Name="DrawingChoice2" Click="DrawingChoice_OnClick"/>
                 </MenuItem>
-                <MenuItem Header="_About"/>
+                <MenuItem Header="_About" Click="About_OnClick"/>
             </Menu>
             <StackPanel></StackPanel>
         </DockPanel>

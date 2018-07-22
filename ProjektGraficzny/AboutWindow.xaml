@@ -1,0 +1,15 @@
+﻿<Window x:Class="ProjektGraficzny.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProjektGraficzny"
+        mc:Ignorable="d"
+        Title="About" Height="189.84" Width="159.275"
+        ResizeMode="NoResize">
+    <Grid>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Controls:" VerticalAlignment="Top" Height="19" Width="54"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,29,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="W:&#x9;move up"/><LineBreak/><Run Text="S:&#x9;move down"/><LineBreak/><Run Text="A:&#x9;move left"/><LineBreak/><Run Text="D:&#x9;move right"/><LineBreak/><Run Text="Q:&#x9;zoom in"/><LineBreak/><Run Text="E:&#x9;zoom out"/><LineBreak/><Run Text="R:&#x9;reset camera"/></TextBlock>
+
+    </Grid>
+</Window>

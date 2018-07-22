@@ -232,6 +232,13 @@ namespace ProjektGraficzny
             Settings.Save();
         }
 
+        private void About_OnClick(object sender, RoutedEventArgs e)
+        {
+            AboutWindow aboutWindow = new AboutWindow();
+            aboutWindow.ShowDialog();
+        }
+
         #endregion
+
     }
 }
