@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Fractals;
 
 namespace ProjektGraficzny
 {
@@ -11,14 +12,17 @@ namespace ProjektGraficzny
     {
 
         public static int renderWidth, renderHeight;
-        public static int fractalChoice;
+
+        public static FractalType selectedFractalType;
+        public static DrawingMode selectedDrawingMode;
 
         public static void Load()
         {
 
             renderWidth = Convert.ToInt32(ConfigurationManager.AppSettings.Get("renderWidth"));
             renderHeight = Convert.ToInt32(ConfigurationManager.AppSettings.Get("renderHeight"));
-            fractalChoice = Convert.ToInt32(ConfigurationManager.AppSettings.Get("fractalChoice"));
+            selectedFractalType = (FractalType)Convert.ToInt32(ConfigurationManager.AppSettings.Get("selectedFractalType"));
+            selectedDrawingMode = (DrawingMode)Convert.ToInt32(ConfigurationManager.AppSettings.Get("selectedDrawingMode"));
 
         }
 
@@ -27,7 +31,8 @@ namespace ProjektGraficzny
 
             ConfigurationManager.AppSettings.Set("renderWidth", "" + renderWidth);
             ConfigurationManager.AppSettings.Set("renderHeight", "" + renderHeight);
-            ConfigurationManager.AppSettings.Set("fractalChoice", "" + fractalChoice);
+            ConfigurationManager.AppSettings.Set("selectedFractalType", "" + (int)selectedFractalType);
+            ConfigurationManager.AppSettings.Set("selectedDrawingMode", "" + (int)selectedDrawingMode);
 
         }
 

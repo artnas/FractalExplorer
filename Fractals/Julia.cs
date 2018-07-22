@@ -11,10 +11,15 @@ namespace Fractals
     public class Julia : Fractal
     {
 
-        internal readonly int maxIterations = 128;
-        internal readonly double cX = -0.7, cY = 0.27015;
-        internal readonly double zoomMultiplier = 250;
-        internal readonly double offsetMultiplier = 0.04;
+        protected new FractalType type = FractalType.Julia;
+        protected readonly int maxIterations = 255;
+
+        protected readonly double cX = -0.7, cY = 0.27015;
+
+        protected new readonly double zoomMultiplier = 0.04;
+        protected new readonly double offsetMultiplier = 1;
+        protected new readonly double xBaseOffset = 0;
+        protected new readonly double yBaseOffset = 0;
 
         public Julia(byte[] buffer, int width, int height)
         {
@@ -27,16 +32,22 @@ namespace Fractals
 
         public override void DrawOnSingleThread(double xOffset, double yOffset, double zoom)
         {
-            Console.WriteLine(zoom);
+            xOffset += xBaseOffset;
+            yOffset += yBaseOffset;
+            xOffset *= offsetMultiplier;
+            yOffset *= offsetMultiplier;
+            zoom *= zoomMultiplier;
 
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
+
                     int index = (x + y * width) * 4;
 
                     double zx = 1.5 * (x - width / 2.0) / (0.5 * zoom * width * zoomMultiplier) + xOffset * offsetMultiplier;
                     double zy = 1.0 * (y - height / 2.0) / (0.5 * zoom * height * zoomMultiplier) / aspectRatio + (yOffset / aspectRatio) * offsetMultiplier;
+
                     int i = maxIterations;
                     while (zx * zx + zy * zy < 4 && i > 1)
                     {
@@ -47,27 +58,42 @@ namespace Fractals
                     }
 
                     Utils.GetIterationColor(i, ref buffer[index], ref buffer[index + 1], ref buffer[index + 2]);
+                    buffer[index + 3] = (byte)i;
+
                 }
             }
         }
 
         public override void DrawOnMultipleThreads(double xOffset, double yOffset, double zoom)
         {
+            xOffset += xBaseOffset;
+            yOffset += yBaseOffset;
+            xOffset *= offsetMultiplier;
+            yOffset *= offsetMultiplier;
+            zoom *= zoomMultiplier;
 
-            Parallel.For(0, width * height, (i =>
+            Parallel.For(0, width * height, (index =>
             {
 
-                int x = i % width;
-                int y = (int) (Math.Floor( (double) (i - x) ) / height);
+                int x = index % width;
+                int y = (int) (Math.Floor( (double) (index - x) ) / height);
 
-                double _x = (x - width / 2.0) * zoom + xOffset;
-                double _y = (y - height / 2.0) * zoom / aspectRatio + yOffset / aspectRatio;
+                double zx = (x - width / 2.0) * zoom + xOffset;
+                double zy = (y - height / 2.0) * zoom / aspectRatio + yOffset / aspectRatio;
 
-                int iterations = GetValue(0, _x, _y);
+                int i = maxIterations;
+                while (zx * zx + zy * zy < 4 && i > 1)
+                {
+                    var tmp = zx * zx - zy * zy + cX;
+                    zy = 2.0 * zx * zy + cY;
+                    zx = tmp;
+                    i--;
+                }
 
-                i *= 4;
+                index *= 4;
 
-                Utils.GetIterationColor(iterations, ref buffer[i], ref buffer[i + 1], ref buffer[i + 2]);
+                Utils.GetIterationColor(i, ref buffer[index], ref buffer[index + 1], ref buffer[index + 2]);
+                buffer[index + 3] = (byte)i;
 
             }));
 
@@ -76,6 +102,11 @@ namespace Fractals
         [GpuManaged]
         public override void DrawOnGpu(double xOffset, double yOffset, double zoom)
         {
+            xOffset += xBaseOffset;
+            yOffset += yBaseOffset;
+            xOffset *= offsetMultiplier;
+            yOffset *= offsetMultiplier;
+            zoom *= zoomMultiplier;
 
             byte[] buffer = this.buffer;
             int width = this.width;
@@ -83,37 +114,32 @@ namespace Fractals
             float aspectRatio = this.aspectRatio;
             int maxIterations = this.maxIterations;
 
+            double cX = this.cX;
+            double cY = this.cY;
+
             int size = width * height;
 
-            Gpu.Default.For(0, size, i =>
+            Gpu.Default.For(0, size, index =>
             {
 
-                int x = i % width;
-                int y = (int)(Math.Floor((double)(i - x)) / height);
+                int x = index % width;
+                int y = (int)(Math.Floor((double)(index - x)) / height);
 
-                double _x = (x - width / 2.0) * zoom + xOffset;
-                double _y = (y - height / 2.0) / aspectRatio * zoom + yOffset / aspectRatio;
+                double zx = (x - width / 2.0) * zoom + xOffset;
+                double zy = (y - height / 2.0) * zoom / aspectRatio + yOffset / aspectRatio;
 
-                int counter;
-
-                double zReal = _x;
-                double zImag = _y;
-
-                for (counter = 0; counter < maxIterations; ++counter)
+                int i = maxIterations;
+                while (zx * zx + zy * zy < 4 && i > 1)
                 {
-                    double r2 = zReal * zReal;
-                    double i2 = zImag * zImag;
-                    if (r2 + i2 > 4.0)
-                    {
-                        break;
-                    }
-                    zImag = 2.0 * zReal * zImag + _y;
-                    zReal = r2 - i2 + _x;
+                    double tmp = zx * zx - zy * zy + cX;
+                    zy = 2.0 * zx * zy + cY;
+                    zx = tmp;
+                    i--;
                 }
 
-                i *= 4;              
+                index *= 4;
 
-                buffer[i] = (byte)counter;
+                buffer[index] = (byte)i;
 
             });
 
@@ -122,6 +148,7 @@ namespace Fractals
 
                 i *= 4;
 
+                buffer[i + 3] = (byte)(buffer[i] > 255 ? 255 : buffer[i]);
                 Utils.GetIterationColor((int)buffer[i], ref buffer[i], ref buffer[i + 1], ref buffer[i + 2]);
 
             }));

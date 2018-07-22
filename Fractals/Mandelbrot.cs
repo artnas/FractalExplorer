@@ -11,7 +11,13 @@ namespace Fractals
     public class Mandelbrot : Fractal
     {
 
-        internal readonly int maxIterations = 256;
+        protected new FractalType type = FractalType.Mandelbrot;
+        protected readonly int maxIterations = 256;
+
+        protected new readonly double zoomMultiplier = 0.004;
+        protected new readonly double offsetMultiplier = 0.04;
+        protected new readonly double xBaseOffset = -0.7;
+        protected new readonly double yBaseOffset = -0.35;
 
         public Mandelbrot(byte[] buffer, int width, int height)
         {
@@ -24,6 +30,12 @@ namespace Fractals
 
         public override void DrawOnSingleThread(double xOffset, double yOffset, double zoom)
         {
+            xOffset += xBaseOffset;
+            yOffset += yBaseOffset;
+            xOffset *= offsetMultiplier;
+            yOffset *= offsetMultiplier;
+            zoom *= zoomMultiplier;
+
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -38,12 +50,19 @@ namespace Fractals
 
                     Utils.GetIterationColor(iterations, ref buffer[index], ref buffer[index+1], ref buffer[index+2]);
 
+                    buffer[index + 3] = (byte) (iterations > 255 ? 255 : iterations);
+
                 }
             }
         }
 
         public override void DrawOnMultipleThreads(double xOffset, double yOffset, double zoom)
         {
+            xOffset += xBaseOffset;
+            yOffset += yBaseOffset;
+            xOffset *= offsetMultiplier;
+            yOffset *= offsetMultiplier;
+            zoom *= zoomMultiplier;
 
             Parallel.For(0, width * height, (i =>
             {
@@ -60,6 +79,8 @@ namespace Fractals
 
                 Utils.GetIterationColor(iterations, ref buffer[i], ref buffer[i + 1], ref buffer[i + 2]);
 
+                buffer[i + 3] = (byte)(iterations > 255 ? 255 : iterations);
+
             }));
 
         }
@@ -67,6 +88,11 @@ namespace Fractals
         [GpuManaged]
         public override void DrawOnGpu(double xOffset, double yOffset, double zoom)
         {
+            xOffset += xBaseOffset;
+            yOffset += yBaseOffset;
+            xOffset *= offsetMultiplier;
+            yOffset *= offsetMultiplier;
+            zoom *= zoomMultiplier;
 
             byte[] buffer = this.buffer;
             int width = this.width;
@@ -83,7 +109,7 @@ namespace Fractals
                 int y = (int)(Math.Floor((double)(i - x)) / height);
 
                 double _x = (x - width / 2.0) * zoom + xOffset;
-                double _y = (y - height / 2.0) / aspectRatio * zoom + yOffset / aspectRatio;
+                double _y = (y - height / 2.0) / aspectRatio * zoom + yOffset * aspectRatio;
 
                 int counter;
 
@@ -113,8 +139,9 @@ namespace Fractals
 
                 i *= 4;
 
+                buffer[i + 3] = (byte)(buffer[i] > 255 ? 255 : buffer[i]);
                 Utils.GetIterationColor((int)buffer[i], ref buffer[i], ref buffer[i + 1], ref buffer[i + 2]);
-
+                
             }));
 
         }

@@ -27,10 +27,12 @@ namespace ProjektGraficzny
         private WriteableBitmap rendererBitmap;
         private byte[] colorBuffer;
 
-        private double zoom = 0.004;
+        private double zoom = 1;
 
-        private double offsetX = -0.7;
-        private double offsetY = -0.35;
+        private double offsetX = 0;
+        private double offsetY = 0;
+
+        private PerformanceLogger performanceLogger;
 
         public MainWindow()
         {
@@ -47,10 +49,12 @@ namespace ProjektGraficzny
             rendererBitmap = new WriteableBitmap(Settings.renderWidth, Settings.renderHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
             colorBuffer = new byte[Settings.renderWidth * Settings.renderHeight * 4];
 
+            performanceLogger = new PerformanceLogger();
+
             RendererImage.Source = rendererBitmap;
 
-            this.SizeChanged += new SizeChangedEventHandler(MainWindow_SizeChanged);
-            this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
+            this.SizeChanged += MainWindow_SizeChanged;
+            this.KeyDown += MainWindow_KeyDown;
 
             DrawFractal();
         }
@@ -58,13 +62,41 @@ namespace ProjektGraficzny
         private void DrawFractal()
         {
 
-            Mandelbrot mandelBrot = new Mandelbrot(colorBuffer, Settings.renderWidth, Settings.renderHeight);
+            performanceLogger.Start(Settings.selectedFractalType, Settings.selectedDrawingMode);
 
-            mandelBrot.DrawOnGpu(offsetX, offsetY, zoom);
+            Fractal fractal = null;
 
-            // Julia fractal = new Julia(colorBuffer, Settings.renderWidth, Settings.renderHeight);
-            //
-            // fractal.DrawOnSingleThread(offsetX, offsetY, zoom);
+            Settings.selectedFractalType = FractalType.Julia;
+            Settings.selectedDrawingMode = DrawingMode.Gpu;
+
+            switch (Settings.selectedFractalType)
+            {
+                case FractalType.Mandelbrot:
+                    fractal = new Mandelbrot(colorBuffer, Settings.renderWidth, Settings.renderHeight);
+                    break;
+                case FractalType.Julia:
+                    fractal = new Julia(colorBuffer, Settings.renderWidth, Settings.renderHeight);
+                    break;
+                default:
+                    throw new Exception("Nieprawidłowy typ fraktala: " + Settings.selectedFractalType);
+            }
+
+            switch (Settings.selectedDrawingMode)
+            {
+                case DrawingMode.CpuSingle:
+                    fractal.DrawOnSingleThread(offsetX, offsetY, zoom);
+                    break;
+                case DrawingMode.CpuMulti:
+                    fractal.DrawOnMultipleThreads(offsetX, offsetY, zoom);
+                    break;
+                case DrawingMode.Gpu:
+                    fractal.DrawOnGpu(offsetX, offsetY, zoom);
+                    break;
+                default:
+                    throw new Exception("Nieprawidłowy typ rysowania: " + Settings.selectedDrawingMode);
+            }
+
+            performanceLogger.Stop(CountTotalIterations());
 
             DrawColorBuffer();
 
@@ -81,16 +113,28 @@ namespace ProjektGraficzny
 
         }
 
+        private long CountTotalIterations()
+        {
+            long sum = 0;
+
+            for (int i = 3; i < Settings.renderWidth * Settings.renderHeight * 4; i += 4)
+            {
+                sum += colorBuffer[i];
+            }
+
+            return sum;
+        }
+
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
 
             switch (e.Key)
             {
                 default: return;
-                case Key.W: offsetY -= 4 * zoom; break;
-                case Key.S: offsetY += 4 * zoom; break;
-                case Key.A: offsetX -= 4 * zoom; break;
-                case Key.D: offsetX += 4 * zoom; break;
+                case Key.W: offsetY -= zoom; break;
+                case Key.S: offsetY += zoom; break;
+                case Key.A: offsetX -= zoom; break;
+                case Key.D: offsetX += zoom; break;
                 case Key.Q: zoom *= 0.85; break;
                 case Key.E: zoom *= 1.15; break;
             }
