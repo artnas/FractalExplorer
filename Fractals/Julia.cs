@@ -12,7 +12,7 @@ namespace Fractals
     {
 
         protected new FractalType type = FractalType.Julia;
-        protected readonly int maxIterations = 255;
+        protected readonly int maxIterations = 127;
 
         protected readonly double cX = -0.7, cY = 0.27015;
 

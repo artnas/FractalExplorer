@@ -53,8 +53,8 @@ namespace ProjektGraficzny
 
             RendererImage.Source = rendererBitmap;
 
-            this.SizeChanged += MainWindow_SizeChanged;
-            this.KeyDown += MainWindow_KeyDown;
+            SizeChanged += MainWindow_SizeChanged;
+            KeyDown += MainWindow_KeyDown;
 
             DrawFractal();
         }
@@ -125,6 +125,12 @@ namespace ProjektGraficzny
             return sum;
         }
 
+        private void ResetOffsetsAndZoom()
+        {
+            offsetX = offsetY = 0;
+            zoom = 1;
+        }
+
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
 
@@ -137,6 +143,7 @@ namespace ProjektGraficzny
                 case Key.D: offsetX += zoom; break;
                 case Key.Q: zoom *= 0.85; break;
                 case Key.E: zoom *= 1.15; break;
+                case Key.R: ResetOffsetsAndZoom(); break;
             }
 
             DrawFractal();
@@ -145,9 +152,6 @@ namespace ProjektGraficzny
 
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // calculates incorrect when window is maximized
-            //ContactsGrid.Width = this.ActualWidth - 20;
-            //ContactsGrid.Height = this.ActualHeight - 190;
 
             Settings.renderWidth = (int)MainGrid.ActualWidth;
             Settings.renderHeight = (int)MainGrid.ActualHeight;
@@ -157,6 +161,8 @@ namespace ProjektGraficzny
             colorBuffer = new byte[Settings.renderWidth * Settings.renderHeight * 4];
             rendererBitmap = new WriteableBitmap(Settings.renderWidth, Settings.renderHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
             RendererImage.Source = rendererBitmap;
+
+            ResetOffsetsAndZoom();
 
             DrawFractal();
            

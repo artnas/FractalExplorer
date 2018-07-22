@@ -12,7 +12,7 @@ namespace Fractals
     {
 
         protected new FractalType type = FractalType.Mandelbrot;
-        protected readonly int maxIterations = 256;
+        protected readonly int maxIterations = 127;
 
         protected new readonly double zoomMultiplier = 0.004;
         protected new readonly double offsetMultiplier = 0.04;
