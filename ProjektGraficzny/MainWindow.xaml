@@ -5,8 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProjektGraficzny"
         mc:Ignorable="d"
-        Title="Fraktale - Artur Nasiadko" Height="600" Width="800">
+        Title="Fraktale - Artur Nasiadko" Height="600" Width="800"
+        Closing="Window_Closing">
     <Grid x:Name="MainGrid">
-        <Image x:Name="RendererImage"/>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Export performance logs">
+                        <MenuItem Header="Regular .csv file"/>
+                        <MenuItem Header="Compressed .csv file"/>
+                        <MenuItem Header="Encrypted .csv file"/>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="_Fractal">
+                    <MenuItem Header="_Mendelbrot" Name="FractalChoice0" IsCheckable="True" Click="FractalChoice_OnClick"/>
+                    <MenuItem Header="_Julia" Name="FractalChoice1" IsCheckable="True" Click="FractalChoice_OnClick"/>
+                </MenuItem>
+                <MenuItem Header="_Drawing Mode">
+                    <MenuItem Header="_CPU Single Thread" Name="DrawingChoice0" Click="DrawingChoice_OnClick"/>
+                    <MenuItem Header="_CPU Parallel" Name="DrawingChoice1" Click="DrawingChoice_OnClick"/>
+                    <MenuItem Header="_GPU" Name="DrawingChoice2" Click="DrawingChoice_OnClick"/>
+                </MenuItem>
+                <MenuItem Header="_About"/>
+            </Menu>
+            <StackPanel></StackPanel>
+        </DockPanel>
+        <Image x:Name="RendererImage" Margin="0,20,0,0"/>
     </Grid>
 </Window>

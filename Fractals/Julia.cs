@@ -19,7 +19,7 @@ namespace Fractals
         protected new readonly double zoomMultiplier = 0.04;
         protected new readonly double offsetMultiplier = 1;
         protected new readonly double xBaseOffset = 0;
-        protected new readonly double yBaseOffset = 0;
+        protected new readonly double yBaseOffset = -4;
 
         public Julia(byte[] buffer, int width, int height)
         {
@@ -38,29 +38,29 @@ namespace Fractals
             yOffset *= offsetMultiplier;
             zoom *= zoomMultiplier;
 
-            for (int y = 0; y < height; y++)
+            for (int i = 0; i < width * height; i++)
             {
-                for (int x = 0; x < width; x++)
+
+                int x = i % width;
+                int y = (int)(Math.Floor((double)(i - x)) / height);
+
+                double zx = (x - width / 2.0) * zoom + xOffset;
+                double zy = (y - height / 2.0) * zoom / aspectRatio + yOffset / aspectRatio;
+
+                int iteration = maxIterations;
+                while (zx * zx + zy * zy < 4 && iteration > 1)
                 {
-
-                    int index = (x + y * width) * 4;
-
-                    double zx = 1.5 * (x - width / 2.0) / (0.5 * zoom * width * zoomMultiplier) + xOffset * offsetMultiplier;
-                    double zy = 1.0 * (y - height / 2.0) / (0.5 * zoom * height * zoomMultiplier) / aspectRatio + (yOffset / aspectRatio) * offsetMultiplier;
-
-                    int i = maxIterations;
-                    while (zx * zx + zy * zy < 4 && i > 1)
-                    {
-                        var tmp = zx * zx - zy * zy + cX;
-                        zy = 2.0 * zx * zy + cY;
-                        zx = tmp;
-                        i--;
-                    }
-
-                    Utils.GetIterationColor(i, ref buffer[index], ref buffer[index + 1], ref buffer[index + 2]);
-                    buffer[index + 3] = (byte)i;
-
+                    var tmp = zx * zx - zy * zy + cX;
+                    zy = 2.0 * zx * zy + cY;
+                    zx = tmp;
+                    iteration--;
                 }
+
+                int index = i * 4;
+
+                Utils.GetIterationColor(iteration, ref buffer[index], ref buffer[index + 1], ref buffer[index + 2]);
+                buffer[index + 3] = (byte)i;
+
             }
         }
 
@@ -149,7 +149,7 @@ namespace Fractals
                 i *= 4;
 
                 buffer[i + 3] = (byte)(buffer[i] > 255 ? 255 : buffer[i]);
-                Utils.GetIterationColor((int)buffer[i], ref buffer[i], ref buffer[i + 1], ref buffer[i + 2]);
+                Utils.GetIterationColor((int)buffer[i + 3], ref buffer[i], ref buffer[i + 1], ref buffer[i + 2]);
 
             }));
 

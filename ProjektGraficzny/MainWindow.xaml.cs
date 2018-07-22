@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Linq;
 using System.Text;
@@ -27,8 +28,10 @@ namespace ProjektGraficzny
         private WriteableBitmap rendererBitmap;
         private byte[] colorBuffer;
 
-        private double zoom = 1;
+        private MenuItem[] drawingChoiceItems;
+        private MenuItem[] fractalChoiceItems;
 
+        private double zoom = 1;
         private double offsetX = 0;
         private double offsetY = 0;
 
@@ -52,22 +55,24 @@ namespace ProjektGraficzny
             performanceLogger = new PerformanceLogger();
 
             RendererImage.Source = rendererBitmap;
+            fractalChoiceItems = new MenuItem[] { FractalChoice0, FractalChoice1 };
+            drawingChoiceItems = new MenuItem[] { DrawingChoice0, DrawingChoice1, DrawingChoice2 };
 
             SizeChanged += MainWindow_SizeChanged;
             KeyDown += MainWindow_KeyDown;
 
-            DrawFractal();
+            DrawingChoice_OnClick(drawingChoiceItems[(int)Settings.selectedDrawingMode], null);
+            FractalChoice_OnClick(fractalChoiceItems[(int)Settings.selectedFractalType], null);
+
+            Draw();
         }
 
-        private void DrawFractal()
+        private void Draw()
         {
 
             performanceLogger.Start(Settings.selectedFractalType, Settings.selectedDrawingMode);
 
             Fractal fractal = null;
-
-            Settings.selectedFractalType = FractalType.Julia;
-            Settings.selectedDrawingMode = DrawingMode.Gpu;
 
             switch (Settings.selectedFractalType)
             {
@@ -98,11 +103,11 @@ namespace ProjektGraficzny
 
             performanceLogger.Stop(CountTotalIterations());
 
-            DrawColorBuffer();
+            UpdateBitmap();
 
         }
 
-        private void DrawColorBuffer()
+        private void UpdateBitmap()
         {
 
             rendererBitmap.WritePixels(
@@ -131,6 +136,8 @@ namespace ProjektGraficzny
             zoom = 1;
         }
 
+    #region Event Handlers
+
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
 
@@ -146,7 +153,7 @@ namespace ProjektGraficzny
                 case Key.R: ResetOffsetsAndZoom(); break;
             }
 
-            DrawFractal();
+            Draw();
 
         }
 
@@ -154,7 +161,7 @@ namespace ProjektGraficzny
         {
 
             Settings.renderWidth = (int)MainGrid.ActualWidth;
-            Settings.renderHeight = (int)MainGrid.ActualHeight;
+            Settings.renderHeight = (int)MainGrid.ActualHeight - 20;
 
             Settings.Save();
 
@@ -164,9 +171,67 @@ namespace ProjektGraficzny
 
             ResetOffsetsAndZoom();
 
-            DrawFractal();
-           
+            Draw();
+
         }
 
+        private void DrawingChoice_OnClick(object sender, RoutedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem) sender;
+
+            for (int i = 0; i < drawingChoiceItems.Length; i++)
+            {
+                var item = drawingChoiceItems[i];
+
+                if (item != menuItem)
+                {
+                    item.IsChecked = false;
+                    item.IsEnabled = true;
+                }
+                else
+                {
+                    item.IsChecked = true;
+                    item.IsEnabled = false;
+
+                    Settings.selectedDrawingMode = (DrawingMode) i;
+                }
+            }
+
+            Draw();
+        }
+
+        private void FractalChoice_OnClick(object sender, RoutedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem)sender;
+
+            for (int i = 0; i < fractalChoiceItems.Length; i++)
+            {
+                var item = fractalChoiceItems[i];
+
+                if (item != menuItem)
+                {
+                    item.IsChecked = false;
+                    item.IsEnabled = true;
+                }
+                else
+                {
+                    item.IsChecked = true;
+                    item.IsEnabled = false;
+
+                    Settings.selectedFractalType = (FractalType)i;
+
+                    ResetOffsetsAndZoom();
+                }
+            }
+
+            Draw();
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            Settings.Save();
+        }
+
+        #endregion
     }
 }
