@@ -19,13 +19,15 @@ namespace Fractals
         protected new readonly double xBaseOffset = -15;
         protected new readonly double yBaseOffset = -10;
 
-        public Mandelbrot(byte[] buffer, int width, int height)
+        public Mandelbrot(byte[] buffer, int width, int height, int maxIterations)
         {
             this.buffer = buffer;
             this.width = width;
             this.height = height;
 
-            this.aspectRatio = (float) width / height;
+            this.aspectRatio = (float)width / height;
+
+            this.maxIterations = maxIterations;
         }
 
         public override void DrawOnSingleThread(double xOffset, double yOffset, double zoom)

@@ -49,12 +49,13 @@ namespace ProjektGraficzny
             Settings.Load();
             Utils.BuildIterationColorsCache();
 
+            RendererImage.Source = rendererBitmap;
+
             rendererBitmap = new WriteableBitmap(Settings.renderWidth, Settings.renderHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
             colorBuffer = new byte[Settings.renderWidth * Settings.renderHeight * 4];
 
             performanceLogger = new PerformanceLogger();
 
-            RendererImage.Source = rendererBitmap;
             fractalChoiceItems = new MenuItem[] { FractalChoice0, FractalChoice1 };
             drawingChoiceItems = new MenuItem[] { DrawingChoice0, DrawingChoice1, DrawingChoice2 };
 
@@ -64,7 +65,8 @@ namespace ProjektGraficzny
             DrawingChoice_OnClick(drawingChoiceItems[(int)Settings.selectedDrawingMode], null);
             FractalChoice_OnClick(fractalChoiceItems[(int)Settings.selectedFractalType], null);
 
-            Draw();
+            this.Width = Settings.defaultWindowWidth;
+            this.Height = Settings.defaultWindowHeight;
         }
 
         private void Draw()
@@ -77,10 +79,10 @@ namespace ProjektGraficzny
             switch (Settings.selectedFractalType)
             {
                 case FractalType.Mandelbrot:
-                    fractal = new Mandelbrot(colorBuffer, Settings.renderWidth, Settings.renderHeight);
+                    fractal = new Mandelbrot(colorBuffer, Settings.renderWidth, Settings.renderHeight, Settings.maxIterations);
                     break;
                 case FractalType.Julia:
-                    fractal = new Julia(colorBuffer, Settings.renderWidth, Settings.renderHeight);
+                    fractal = new Julia(colorBuffer, Settings.renderWidth, Settings.renderHeight, Settings.maxIterations);
                     break;
                 default:
                     throw new Exception("Nieprawidłowy typ fraktala: " + Settings.selectedFractalType);
@@ -162,8 +164,6 @@ namespace ProjektGraficzny
 
             Settings.renderWidth = (int)MainGrid.ActualWidth;
             Settings.renderHeight = (int)MainGrid.ActualHeight - 20;
-
-            Settings.Save();
 
             colorBuffer = new byte[Settings.renderWidth * Settings.renderHeight * 4];
             rendererBitmap = new WriteableBitmap(Settings.renderWidth, Settings.renderHeight, 96.0, 96.0, PixelFormats.Bgr32, null);

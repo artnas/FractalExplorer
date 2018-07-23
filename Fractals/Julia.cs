@@ -21,13 +21,15 @@ namespace Fractals
         protected new readonly double xBaseOffset = 0;
         protected new readonly double yBaseOffset = -4;
 
-        public Julia(byte[] buffer, int width, int height)
+        public Julia(byte[] buffer, int width, int height, int maxIterations)
         {
             this.buffer = buffer;
             this.width = width;
             this.height = height;
 
             this.aspectRatio = (float) width / height;
+
+            this.maxIterations = maxIterations;
         }
 
         public override void DrawOnSingleThread(double xOffset, double yOffset, double zoom)
