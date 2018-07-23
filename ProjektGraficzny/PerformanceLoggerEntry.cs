@@ -23,5 +23,9 @@ namespace ProjektGraficzny
             this.timeTicks = timeTicks;
         }
 
+        public override string ToString()
+        {
+            return $"{(int) fractalType}|{(int) drawingMode}|{totalIterations}|{timeTicks}";
+        }
     }
 }

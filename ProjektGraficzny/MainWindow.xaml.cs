@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.IO;
+using System.IO.Pipes;
 using System.Linq;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Fractals;
+using NamedPipeWrapper;
 
 namespace ProjektGraficzny
 {
@@ -35,7 +39,11 @@ namespace ProjektGraficzny
         private double offsetX = 0;
         private double offsetY = 0;
 
+        private ServiceController service;
         private PerformanceLogger performanceLogger;
+
+        private readonly string pipeName = "ProjektGraficznyPipe";
+        private NamedPipeServer<PipeMessage> pipeServer;
 
         public MainWindow()
         {
@@ -48,13 +56,15 @@ namespace ProjektGraficzny
         {
             Settings.Load();
             Utils.BuildIterationColorsCache();
+            CreatePipe();
 
             RendererImage.Source = rendererBitmap;
 
             rendererBitmap = new WriteableBitmap(Settings.renderWidth, Settings.renderHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
             colorBuffer = new byte[Settings.renderWidth * Settings.renderHeight * 4];
 
-            performanceLogger = new PerformanceLogger();
+            performanceLogger = new PerformanceLogger(this);
+            StartService();
 
             fractalChoiceItems = new MenuItem[] { FractalChoice0, FractalChoice1 };
             drawingChoiceItems = new MenuItem[] { DrawingChoice0, DrawingChoice1, DrawingChoice2 };
@@ -67,6 +77,57 @@ namespace ProjektGraficzny
 
             this.Width = Settings.defaultWindowWidth;
             this.Height = Settings.defaultWindowHeight;
+        }
+
+        private void CreatePipe()
+        {
+            pipeServer = new NamedPipeServer<PipeMessage>(pipeName);
+
+            // server.ClientConnected += delegate (NamedPipeConnection<PipeMessage, PipeMessage> conn)
+            // {
+            //     Console.WriteLine("Client {0} is now connected!", conn.Id);
+            //     conn.PushMessage(new PipeMessage { Text: "Welcome!" });
+            // };
+
+            // server.ClientMessage += delegate (NamedPipeConnection<PipeMessage, PipeMessage> conn, PipeMessage message)
+            // {
+            //     Console.WriteLine("Client {0} says: {1}", conn.Id, message.Text);
+            // };
+
+            // Start up the server asynchronously and begin listening for connections.
+            // This method will return immediately while the server runs in a separate background thread.
+            pipeServer.Start();
+        }
+
+        public void SendMessageToClient(int messageType, string content)
+        {
+            pipeServer.PushMessage(new PipeMessage(){messageType = messageType, content = content});
+        }
+
+        private void StartService()
+        {
+            try
+            {
+                service = new ServiceController("PerformanceMonitoringService");
+                service.Start();  
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }      
+        }
+
+        private void StopService()
+        {
+            try
+            {
+                service?.Stop();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }       
         }
 
         private void Draw()
@@ -230,6 +291,8 @@ namespace ProjektGraficzny
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             Settings.Save();
+            performanceLogger.WriteLogsToService();
+            StopService();
         }
 
         private void About_OnClick(object sender, RoutedEventArgs e)

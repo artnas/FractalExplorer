@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjektGraficzny", "Projekt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fractals", "Fractals\Fractals.csproj", "{E5FD81F5-6C0E-4D4E-8969-FFF79700EC08}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceMonitoringService", "PerformanceMonitoringService\PerformanceMonitoringService.csproj", "{D960B4CB-90E3-47B8-B7C9-5AA0657B59BC}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup2", "Setup2\Setup2.vdproj", "{0F8B916D-1666-4D9A-9118-550F00EA9806}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,12 @@ Global
 		{E5FD81F5-6C0E-4D4E-8969-FFF79700EC08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5FD81F5-6C0E-4D4E-8969-FFF79700EC08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5FD81F5-6C0E-4D4E-8969-FFF79700EC08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D960B4CB-90E3-47B8-B7C9-5AA0657B59BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D960B4CB-90E3-47B8-B7C9-5AA0657B59BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D960B4CB-90E3-47B8-B7C9-5AA0657B59BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D960B4CB-90E3-47B8-B7C9-5AA0657B59BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F8B916D-1666-4D9A-9118-550F00EA9806}.Debug|Any CPU.ActiveCfg = Debug
+		{0F8B916D-1666-4D9A-9118-550F00EA9806}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
