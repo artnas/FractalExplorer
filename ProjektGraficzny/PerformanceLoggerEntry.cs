@@ -25,7 +25,7 @@ namespace ProjektGraficzny
 
         public override string ToString()
         {
-            return $"{(int) fractalType}|{(int) drawingMode}|{totalIterations}|{timeTicks}";
+            return $"{fractalType}{Settings.csvSeparator}{drawingMode}{Settings.csvSeparator}{totalIterations}{Settings.csvSeparator}{timeTicks}";
         }
     }
 }

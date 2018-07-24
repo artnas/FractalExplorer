@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Fractals;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ProjektGraficzny
 {
@@ -97,6 +102,139 @@ namespace ProjektGraficzny
             {
                 mainWindow.SendMessageToClient(1, s);
             }
+        }
+
+        // mode:
+        // 0 = regular
+        // 1 = compressed
+        // 2 = encrypted
+        public void ExportLogsToCsv(int mode = 0)
+        {
+            Stream myStream;
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.Filter = "csv files (*.csv)|*.csv";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            try
+            {
+                if (saveFileDialog1.ShowDialog().Value)
+                {
+                    if ((myStream = saveFileDialog1.OpenFile()) != null)
+                    {
+                        WriteLogsToStream(mode, myStream);
+                        // Code to write the stream goes here.
+                        myStream.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Błąd podczas zapisywania pliku: " + ex.Message);
+            }   
+        }
+
+        private void WriteLogsToStream(int mode, Stream stream)
+        {
+            string s = $"Fraktal{Settings.csvSeparator}Tryb{Settings.csvSeparator}Iteracje{Settings.csvSeparator}Czas (ticks)\n";
+
+            foreach (var entry in entries)
+            {
+                s += entry.ToString() + "\n";
+            }
+
+            switch (mode)
+            {
+                case 0: // regular
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(s);
+
+                    stream.Write(bytes, 0, bytes.Length);
+                    break;
+                }
+                case 1: // compressed
+                {
+                    byte[] bytes = Zip(s);
+
+                    stream.Write(bytes, 0, bytes.Length);
+                    break;
+                }              
+                case 2: // encrypted
+                {
+                    RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                    string pubkey = rsa.ToXmlString(false);
+
+                    byte[] bytes = RSAEncrypt(Encoding.UTF8.GetBytes(s), pubkey);
+
+                    stream.Write(bytes, 0, bytes.Length);
+                    break;
+                }
+            }
+        }
+
+        public static void CopyTo(Stream src, Stream dest)
+        {
+            byte[] bytes = new byte[4096];
+
+            int cnt;
+
+            while ((cnt = src.Read(bytes, 0, bytes.Length)) != 0)
+            {
+                dest.Write(bytes, 0, cnt);
+            }
+        }
+
+        public static byte[] Zip(string str)
+        {
+            var bytes = Encoding.UTF8.GetBytes(str);
+
+            using (var msi = new MemoryStream(bytes))
+            using (var mso = new MemoryStream())
+            {
+                using (var gs = new GZipStream(mso, CompressionMode.Compress))
+                {
+                    //msi.CopyTo(gs);
+                    CopyTo(msi, gs);
+                }
+
+                return mso.ToArray();
+            }
+        }
+
+        public static string Unzip(byte[] bytes)
+        {
+            using (var msi = new MemoryStream(bytes))
+            using (var mso = new MemoryStream())
+            {
+                using (var gs = new GZipStream(msi, CompressionMode.Decompress))
+                {
+                    //gs.CopyTo(mso);
+                    CopyTo(gs, mso);
+                }
+
+                return Encoding.UTF8.GetString(mso.ToArray());
+            }
+        }
+
+        public static byte[] RSAEncrypt(byte[] plaintext, string destKey)
+        {
+            byte[] encryptedData;
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            rsa.FromXmlString(destKey);
+            encryptedData = rsa.Encrypt(plaintext, true);
+            rsa.Dispose();
+            return encryptedData;
+        }
+
+        public static byte[] RSADecrypt(byte[] ciphertext, string srcKey)
+        {
+            byte[] decryptedData;
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            rsa.FromXmlString(srcKey);
+            decryptedData = rsa.Decrypt(ciphertext, true);
+            rsa.Dispose();
+            return decryptedData;
         }
 
     }

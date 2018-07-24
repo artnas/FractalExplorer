@@ -20,6 +20,8 @@ namespace ProjektGraficzny
 
         public static int maxIterations;
 
+        public static char csvSeparator;
+
         public static void Load()
         {
 
@@ -38,6 +40,10 @@ namespace ProjektGraficzny
                 : (DrawingMode)Convert.ToInt32(ConfigurationManager.AppSettings.Get("defaultSelectedDrawingMode"));
 
             maxIterations = Convert.ToInt32(ConfigurationManager.AppSettings.Get("maxIterations"));
+
+            csvSeparator = ConfigurationManager.AppSettings.Get("csvSeparator").Length > 0 
+                ? ConfigurationManager.AppSettings.Get("csvSeparator")[0]
+                : ';';
 
             Save();
 

@@ -301,6 +301,24 @@ namespace ProjektGraficzny
             aboutWindow.ShowDialog();
         }
 
+        private void ExportChoice_OnClick(object sender, RoutedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem)sender;
+
+            switch (menuItem.Name)
+            {
+                case "ExportChoice0":
+                    performanceLogger.ExportLogsToCsv(0);
+                    break;
+                case "ExportChoice1":
+                    performanceLogger.ExportLogsToCsv(1);
+                    break;
+                case "ExportChoice2":
+                    performanceLogger.ExportLogsToCsv(2);
+                    break;
+            }
+        }
+
         #endregion
 
     }

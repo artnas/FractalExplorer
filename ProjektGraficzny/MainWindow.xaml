@@ -12,14 +12,14 @@
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
                     <MenuItem Header="_Export performance logs">
-                        <MenuItem Header="Regular .csv file"/>
-                        <MenuItem Header="Compressed .csv file"/>
-                        <MenuItem Header="Encrypted .csv file"/>
+                        <MenuItem Header="Regular .csv file" Name="ExportChoice0" Click="ExportChoice_OnClick"/>
+                        <MenuItem Header="Compressed .csv file" Name="ExportChoice1" Click="ExportChoice_OnClick"/>
+                        <MenuItem Header="Encrypted .csv file" Name="ExportChoice2" Click="ExportChoice_OnClick"/>
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="_Fractal">
-                    <MenuItem Header="_Mendelbrot" Name="FractalChoice0" IsCheckable="True" Click="FractalChoice_OnClick"/>
-                    <MenuItem Header="_Julia" Name="FractalChoice1" IsCheckable="True" Click="FractalChoice_OnClick"/>
+                    <MenuItem Header="_Mendelbrot" Name="FractalChoice0" Click="FractalChoice_OnClick"/>
+                    <MenuItem Header="_Julia" Name="FractalChoice1" Click="FractalChoice_OnClick"/>
                 </MenuItem>
                 <MenuItem Header="_Drawing Mode">
                     <MenuItem Header="_CPU Single Thread" Name="DrawingChoice0" Click="DrawingChoice_OnClick"/>
