@@ -175,45 +175,67 @@ namespace ProjektGraficzny
 
         public static void CopyTo(Stream src, Stream dest)
         {
-            byte[] bytes = new byte[4096];
+            byte[] bytes = new byte[src.Length];
 
             int cnt;
-
             while ((cnt = src.Read(bytes, 0, bytes.Length)) != 0)
             {
                 dest.Write(bytes, 0, cnt);
             }
         }
 
+        // Kompresja string -> Gzip -> B64 string
         public static byte[] Zip(string str)
         {
             var bytes = Encoding.UTF8.GetBytes(str);
 
-            using (var msi = new MemoryStream(bytes))
-            using (var mso = new MemoryStream())
+            using (var inputStream = new MemoryStream(bytes))
             {
-                using (var gs = new GZipStream(mso, CompressionMode.Compress))
+                using (var outputStream = new MemoryStream())
                 {
-                    //msi.CopyTo(gs);
-                    CopyTo(msi, gs);
-                }
+                    using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
+                    {
+                        //msi.CopyTo(gs);
+                        CopyTo(inputStream, gZipStream);
+                    }
 
-                return mso.ToArray();
+                    byte[] outputArray = outputStream.ToArray();
+                    string encodedArray = Convert.ToBase64String(outputArray);
+
+                    //Console.WriteLine(Encoding.UTF8.GetString(outputArray));
+                    //Console.WriteLine(encodedArray);
+
+                    return Encoding.UTF8.GetBytes(encodedArray);
+                }
             }
         }
 
+        // Dekompresja B64 string -> Gzip -> string
         public static string Unzip(byte[] bytes)
         {
-            using (var msi = new MemoryStream(bytes))
-            using (var mso = new MemoryStream())
+            using (var inputStream = new MemoryStream(bytes))
             {
-                using (var gs = new GZipStream(msi, CompressionMode.Decompress))
+                using (var outputStream = new MemoryStream())
                 {
-                    //gs.CopyTo(mso);
-                    CopyTo(gs, mso);
-                }
+                    byte[] encodedArray = inputStream.ToArray();
+                    string encodedString = Encoding.UTF8.GetString(encodedArray);
+                    byte[] decodedArray = Convert.FromBase64String(encodedString);
 
-                return Encoding.UTF8.GetString(mso.ToArray());
+                    using (var decodedStream = new MemoryStream(decodedArray))
+                    {
+                        //Console.WriteLine(Encoding.UTF8.GetString(decodedArray));
+                        //Console.WriteLine(encodedString);
+
+                        using (var gZipStream = new GZipStream(decodedStream, CompressionMode.Decompress))
+                        {
+                            gZipStream.CopyTo(outputStream);
+                            gZipStream.Close();
+                        }
+
+                    }
+
+                    return Encoding.UTF8.GetString(outputStream.ToArray());
+                }
             }
         }
 
