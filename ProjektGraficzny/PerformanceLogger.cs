@@ -52,7 +52,18 @@ namespace ProjektGraficzny
 
             Console.WriteLine(totalIterations + " in " + timeTicks + " ticks, rate: " + ((double)totalIterations/timeTicks));
 
+            UpdatePerformanceText(newEntry);
+
             //mainWindow.SendMessageToClient(0, newEntry.ToString());
+        }
+
+        private void UpdatePerformanceText(PerformanceLoggerEntry entry)
+        {
+            var frameMs = (double) entry.timeTicks / TimeSpan.TicksPerMillisecond;
+            var framesPerSecond = (int)Math.Round(1000.0 / frameMs);
+
+            mainWindow.PerformanceText.Text =
+                $"{entry.fractalType} - {entry.drawingMode}\nFrame time: {frameMs}ms\nFPS: {framesPerSecond}\nIterations: {entry.totalIterations.ToString("N0",System.Globalization.CultureInfo.GetCultureInfo("de"))}\nIterations per tick: {Math.Round( (double) entry.totalIterations / entry.timeTicks) }";
         }
 
         public void WriteLogsToService()

@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceMonitoringServic
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup2", "Setup2\Setup2.vdproj", "{0F8B916D-1666-4D9A-9118-550F00EA9806}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjektGraficznyTests", "ProjektGraficznyTests\ProjektGraficznyTests.csproj", "{29197217-BAEA-4B3C-A0A0-1EAFADE546B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "ProjektGraficznyTests\Tests.csproj", "{29197217-BAEA-4B3C-A0A0-1EAFADE546B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

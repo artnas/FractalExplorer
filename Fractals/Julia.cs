@@ -61,7 +61,7 @@ namespace Fractals
                 int index = i * 4;
 
                 Utils.GetIterationColor(iteration, ref buffer[index], ref buffer[index + 1], ref buffer[index + 2]);
-                buffer[index + 3] = (byte)i;
+                buffer[index + 3] = (byte)iteration;
 
             }
         }

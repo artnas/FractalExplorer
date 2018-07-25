@@ -167,6 +167,7 @@ namespace ProjektGraficzny
             performanceLogger.Stop(CountTotalIterations());
 
             UpdateBitmap();
+            UpdateTransformationText();
 
         }
 
@@ -197,6 +198,11 @@ namespace ProjektGraficzny
         {
             offsetX = offsetY = 0;
             zoom = 1;
+        }
+
+        private void UpdateTransformationText()
+        {
+            TransformationText.Text = $"Position: ({offsetX}; {offsetY})\nZoom: {zoom}";
         }
 
     #region Event Handlers
