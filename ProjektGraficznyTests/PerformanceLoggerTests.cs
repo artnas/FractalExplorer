@@ -15,7 +15,8 @@ namespace ProjektGraficzny.Tests
         [TestMethod()]
         public void EncryptionTest()
         {
-            string originalString = "Test 123 ABC";
+            // dlugosc stringa nie moze byc zbyt duza
+            string originalString = "qwerty1234567890";
 
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
             string pubkey = rsa.ToXmlString(false);

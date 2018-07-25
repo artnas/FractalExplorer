@@ -139,9 +139,21 @@ namespace ProjektGraficzny
         {
             string s = $"Fraktal{Settings.csvSeparator}Tryb{Settings.csvSeparator}Iteracje{Settings.csvSeparator}Czas (ticks)\n";
 
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            string pubkey = rsa.ToXmlString(false);
+
             foreach (var entry in entries)
             {
-                s += entry.ToString() + "\n";
+                string ss = entry.ToString() + "\n";
+       
+                if (mode == 2)
+                {
+                    // szyfrowanie kazdej linijki
+                    byte[] bytes = RSAEncrypt(Encoding.UTF8.GetBytes(ss), pubkey);
+                    ss = Encoding.UTF8.GetString(bytes);
+                }
+
+                s += ss;
             }
 
             switch (mode)
@@ -162,10 +174,7 @@ namespace ProjektGraficzny
                 }              
                 case 2: // encrypted
                 {
-                    RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                    string pubkey = rsa.ToXmlString(false);
-
-                    byte[] bytes = RSAEncrypt(Encoding.UTF8.GetBytes(s), pubkey);
+                    byte[] bytes = Encoding.UTF8.GetBytes(s);
 
                     stream.Write(bytes, 0, bytes.Length);
                     break;
@@ -195,8 +204,8 @@ namespace ProjektGraficzny
                 {
                     using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
                     {
-                        //msi.CopyTo(gs);
-                        CopyTo(inputStream, gZipStream);
+                        inputStream.CopyTo(gZipStream);
+                        //CopyTo(inputStream, gZipStream);
                     }
 
                     byte[] outputArray = outputStream.ToArray();
